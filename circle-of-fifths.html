@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Circle of Fifths</title>
+    <style>
+        body {
+            background-color: black;
+            color: whitesmoke;
+            margin-left: auto;
+            margin-right: auto;
+            width: 640px;
+        }
+        .center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="center">The Circle of <del>Life</del> Fifths</h1>
+    <canvas id="circle" width="640" height="640"></canvas>
+    <script>
+        const backgroundColor = "silver"
+        const majorColor = "rgb(0, 87, 184)"
+        const majorSize = 30  // in units of pixels
+        const minorColor = "rgb(254, 221, 0)"
+        const minorSize = 25
+        const keySigColor = "rgb(0, 0, 0)"
+        const keySigSize = 20
+
+        function deg2rad(degrees) {
+            return degrees / 180 * Math.PI
+        }
+
+        function polar2x(radius, degrees) {
+            return radius * Math.cos(deg2rad(degrees))
+        }
+
+        function polar2y(radius, degrees) {
+            return radius * Math.sin(deg2rad(degrees))
+        }
+
+        const canvas = document.getElementById("circle")
+        const context = canvas.getContext("2d")
+        const height = context.canvas.clientHeight
+        const width = context.canvas.clientWidth
+
+        /* If the circle of fifths were an angel food cake, it would have 12 slices. */
+        context.beginPath()
+        let outerRadius = Math.min(width, height) / 2
+        context.arc(width/2, height/2, outerRadius, 0, deg2rad(360))
+        context.fillStyle = backgroundColor;
+        context.fill()
+        context.beginPath()
+        let innerRadius = Math.min(width, height) / 5
+        context.arc(width/2, height/2, innerRadius, 0, deg2rad(360))
+        context.globalCompositeOperation="destination-out"  // erase to transparency
+        context.fill()
+
+        for (let deg=-15; deg<=345; deg+=30) {
+            context.lineWidth = 3
+            context.beginPath()
+            context.moveTo(innerRadius * Math.cos(deg2rad(deg)) + width / 2, innerRadius * Math.sin(deg2rad(deg)) + height / 2)
+            context.lineTo(outerRadius * Math.cos(deg2rad(deg)) + width / 2, outerRadius * Math.sin(deg2rad(deg)) + height / 2)
+            context.stroke()
+        }
+        context.globalCompositeOperation="source-over"  // back to default (not erasing)
+
+        /* xTxtAdj and yTxtAdj allow tweaking of position for longer text strings. */
+        let major = [
+            { "note": "C", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "G", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "D", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "A", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "E", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "B/C♭", "xTxtAdj": -1, "yTxtAdj": 0.1 },
+            { "note": "G♭/F♯", "xTxtAdj": -1, "yTxtAdj": 0.1 },
+            { "note": "D♭/C♯", "xTxtAdj": -1, "yTxtAdj": 0.1 },
+            { "note": "A♭", "xTxtAdj": -0.3, "yTxtAdj": 0.5 },
+            { "note": "E♭", "xTxtAdj": -0.4, "yTxtAdj": 0.5 },
+            { "note": "B♭", "xTxtAdj": -0.4, "yTxtAdj": 0.5 },
+            { "note": "F", "xTxtAdj": -0.5, "yTxtAdj": 0.5 }
+        ]
+
+        context.fillStyle = majorColor
+        context.font = `${majorSize}px sans-serif`;
+
+        for (let i=0; i<12; i++) {
+            let deg = 30 * i - 90
+            context.fillText(major[i].note, polar2x(width/2-majorSize, deg) + width/2 + major[i].xTxtAdj*majorSize, polar2y(height/2-majorSize, deg) + height/2  + major[i].yTxtAdj*majorSize);
+        }
+
+        let minor = [
+            { "note": "a", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "e", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "b", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "f♯", "xTxtAdj": -0.5, "yTxtAdj": 0.4 },
+            { "note": "c♯", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "note": "g♯/a♭", "xTxtAdj": -1, "yTxtAdj": 0.3 },
+            { "note": "e♭/d♯", "xTxtAdj": -1, "yTxtAdj": 0.5 },
+            { "note": "b♭/a♯", "xTxtAdj": -1.1, "yTxtAdj": 0.3 },
+            { "note": "f", "xTxtAdj": -0.3, "yTxtAdj": 0.5 },
+            { "note": "c", "xTxtAdj": -0.4, "yTxtAdj": 0.4 },
+            { "note": "g", "xTxtAdj": -0.4, "yTxtAdj": 0.5 },
+            { "note": "d", "xTxtAdj": -0.5, "yTxtAdj": 0.5 }
+        ]
+
+        context.fillStyle = minorColor
+        context.font = `${minorSize}px sans-serif`;
+
+        for (let i=0; i<12; i++) {
+            let deg = 30 * i - 90
+            context.fillText(minor[i].note, polar2x(width/3-minorSize, deg) + width/2 + minor[i].xTxtAdj*minorSize, polar2y(height/3-minorSize, deg) + height/2  + minor[i].yTxtAdj*minorSize);
+        }
+
+        let keySigs = [
+            { "sign": "♮", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "sign": "1♯", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "sign": "2♯", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "sign": "3♯", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "sign": "4♯", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "sign": "5♯/7♭", "xTxtAdj": -1, "yTxtAdj": 0.3 },
+            { "sign": "6♭/6♯", "xTxtAdj": -1, "yTxtAdj": 0.5 },
+            { "sign": "5♭/7♯", "xTxtAdj": -1, "yTxtAdj": 0.3 },
+            { "sign": "4♭", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "sign": "3♭", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "sign": "2♭", "xTxtAdj": -0.5, "yTxtAdj": 0.5 },
+            { "sign": "1♭", "xTxtAdj": -0.5, "yTxtAdj": 0.5 }
+        ]
+
+        context.fillStyle = keySigColor
+        context.font = `${keySigSize}px sans-serif`;
+
+        for (let i=0; i<12; i++) {
+            let deg = 30 * i - 90
+            context.fillText(keySigs[i].sign, polar2x(width/2.5-keySigSize, deg) + width/2 + keySigs[i].xTxtAdj*keySigSize, polar2y(height/2.5-keySigSize, deg) + height/2  + keySigs[i].yTxtAdj*keySigSize);
+        }
+    </script>
+
+    <p class="center">Steal this image! It's public domain. Just right-click and save as...</p>
+</body>
+
+</html>
