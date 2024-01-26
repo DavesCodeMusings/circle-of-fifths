@@ -6,6 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Copy to /docs
+      run: |
+        cp circle-of-fifths.html docs/index.html
     - name: Check HTML5
       uses: Cyb3r-Jak3/html5validator-action@v7.2.0
       with:
