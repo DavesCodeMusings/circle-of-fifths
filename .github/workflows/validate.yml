@@ -13,3 +13,11 @@ jobs:
       uses: Cyb3r-Jak3/html5validator-action@v7.2.0
       with:
         root: docs
+    - name: Commit updates docs
+      run: |
+        if [ $(git diff | wc -l) -gt 0 ]; then
+          git config --global user.name "$GITHUB_REPOSITORY_OWNER"
+          git config --global user.email "$GITHUB_REPOSITORY_OWNER@users.noreply.github.com"
+          git commit -am "GitHub Actions"
+          git push
+        fi
